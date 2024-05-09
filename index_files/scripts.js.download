@@ -1,0 +1,586 @@
+// Declare global variables
+
+const queryString = window.location.search;
+
+// Reload Page
+
+function reloadPage(delay) {
+    setTimeout(function() {
+        location.reload();
+    }, delay);
+}
+
+// Tab Cloaking
+
+const originalFavicon = "/tortilla.png";
+const newFavicon = "https://www.google.com/favicon.ico"; 
+const originalTitle = document.title;
+
+function setFavicon(newFaviconURL) {
+    const link = document.querySelector("link[rel='icon']") || document.createElement('link');
+    link.rel = 'icon';
+    link.href = newFaviconURL;
+  
+    document.head.appendChild(link);
+}
+  
+function enableTabCloaking() {
+    setFavicon(newFavicon);
+    document.title = "Google";
+
+    togglePageCloak();
+}
+  
+function disableTabCloaking() {
+    setFavicon(originalFavicon);
+    document.title = originalTitle;
+    setTimeout(function() {
+        togglePageCloak();
+    }, 500);
+}
+  
+function tabCloaking() {
+    const tabCloakingEnabled = localStorage.getItem("tabCloakingEnabled") === "true";
+  
+    if (tabCloakingEnabled) {
+        document.addEventListener("visibilitychange", function () {
+            if (document.hidden && tabCloakingEnabled) {
+                enableTabCloaking();
+            } else {
+               disableTabCloaking();
+            }
+    });
+    }
+}
+tabCloaking();
+
+// about:blank iFrame
+
+function openAboutBlankWindow(iframeURL, aboutBlankTitle) {
+    const newAboutBlankWindow = window.open('about:blank');
+    const iframe = document.createElement('iframe');
+    newAboutBlankWindow.document.body.style.margin = '0';
+    newAboutBlankWindow.document.body.style.height = '100vh';
+    newAboutBlankWindow.document.title = aboutBlankTitle;
+    iframe.src = iframeURL;
+    iframe.style.border = 'none';
+    iframe.border = '0';
+    iframe.style.left = 0;
+    iframe.style.top = 0;
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.allow = "fullscreen";
+    iframe.referrerpolicy = "no-referrer";
+    iframe.style.margin = '0';
+    iframe.style.padding = '0';
+    newAboutBlankWindow.document.body.appendChild(iframe);
+}
+
+// Handle sorting the games/apps
+
+const sortingMode = localStorage.getItem("sortingMode");
+
+if (sortingMode === "default" || sortingMode === null) {
+} else if (sortingMode === "az") {
+    document.addEventListener("DOMContentLoaded", function() {
+        var gameContainers = document.querySelectorAll('.game');
+        var gameContainerArray = Array.from(gameContainers);
+        var gameList = document.getElementById('gameContainer');
+  
+        if (gameList) {
+          gameContainerArray.sort(function(a, b) {
+            var titleA = a.textContent.toLowerCase();
+            var titleB = b.textContent.toLowerCase();
+            return titleA.localeCompare(titleB);
+          });
+  
+          gameList.innerHTML = '';
+  
+          gameContainerArray.forEach(function(gameContainer) {
+            gameList.appendChild(gameContainer);
+          });
+        }
+    });
+} else if (sortingMode === "za") {
+    document.addEventListener("DOMContentLoaded", function() {
+        var gameContainers = document.querySelectorAll('.game');
+        var gameContainerArray = Array.from(gameContainers);
+        var gameList = document.getElementById('gameContainer');
+  
+        if (gameList) {
+          gameContainerArray.sort(function(a, b) {
+            var titleA = a.textContent.toLowerCase();
+            var titleB = b.textContent.toLowerCase();
+            return titleB.localeCompare(titleA);
+          });
+  
+          gameList.innerHTML = '';
+  
+          gameContainerArray.forEach(function(gameContainer) {
+            gameList.appendChild(gameContainer);
+          });
+        }
+    });
+}
+
+// Redirect Function
+
+function redirectTo(URL) {
+    window.location.href = URL;
+}
+
+// Handle Advertisements
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (localStorage.getItem("adsEnabled") === "true") {
+        var scriptElement = document.createElement("script");
+        scriptElement.async = true;
+        scriptElement.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6114346129491087";
+        scriptElement.crossOrigin = "anonymous";
+
+        var scriptElement2 = document.createElement("script");
+        scriptElement2.async = true;
+        scriptElement2.src = "https://fundingchoicesmessages.google.com/i/pub-6114346129491087?ers=1";
+        scriptElement2.crossOrigin = "anonymous";
+
+        var scriptElement2_1 = document.createElement("script");
+        scriptElement2_1.async = true;
+        scriptElement2_1.nonce="shEP4LA0KeBZdRKs2EXR4Q";
+        scriptElement2_1.src = "adScript1.js";
+        scriptElement2_1.crossOrigin = "anonymous";
+
+        var scriptElement3 = document.createElement("script");
+        scriptElement3.async = true;
+        scriptElement3.src = "adScript2.js";
+        scriptElement3.crossOrigin = "anonymous";
+
+
+        document.head.appendChild(scriptElement);
+        document.head.appendChild(scriptElement2);
+        document.head.appendChild(scriptElement2_1);
+        document.head.appendChild(scriptElement3);
+    } else if (localStorage.getItem("adsEnabled") === null) {
+        localStorage.setItem("adsEnabled", "true");
+    }
+});
+
+// Handle theme changing
+
+if (localStorage.getItem('theme') === 'hacker') {
+    function styleNavbar(color) {
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = '.navbar a::after { background-color: ' + color + '; }';
+
+        document.head.appendChild(style);
+    }
+
+    function styleSettingLabelButtons(color) {
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = 'label { background-color: ' + color + '; } .setting-button { background-color: ' + color + '; } .dropbtn { background-color: ' + color + '; }';
+
+        document.head.appendChild(style);
+    }
+
+    function styleSettingToggles(color) {
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = 'input:checked + .setting-toggle { background-color: ' + color + '; }';
+
+        document.head.appendChild(style);
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        styleNavbar('lime');
+        styleSettingLabelButtons('green');
+        styleSettingToggles('green');
+    });
+}
+
+// Handle Arc CDN
+
+document.addEventListener("DOMContentLoaded", function () {
+    if (localStorage.getItem("arcEnabled") === "true") {
+        var scriptElement = document.createElement("script");
+        scriptElement.src = "https://arc.io/widget.js";
+
+        const arcUrlParam = new URLSearchParams(queryString).get('showarcwidget');
+
+        if (!arcUrlParam || arcUrlParam.toLowerCase() !== 'false') {
+            document.body.appendChild(scriptElement);
+        }
+    } else if (localStorage.getItem("arcEnabled") === null) {
+        localStorage.setItem("arcEnabled", "true");
+    }
+});
+
+// Add SweetAlert2 Script
+
+
+var scriptElement = document.createElement("script");
+scriptElement.async = true;
+scriptElement.src = "https://cdn.jsdelivr.net/npm/sweetalert2@11";
+scriptElement.crossOrigin = "anonymous";
+
+document.head.appendChild(scriptElement);
+
+// Handle adding rounded corners to games/apps
+
+if (!localStorage.getItem("legacyUI")) {
+    const roundCornersStyle = document.createElement('style');
+    roundCornersStyle.type = 'text/css';
+    roundCornersStyle.innerHTML = '.game { border-radius: 10px; } .game_force-open { border-radius: 10px; } .app { border-radius: 10px; } .app_force-open { border-radius: 10px; }';
+    document.head.appendChild(roundCornersStyle);
+}
+
+// Handle enabling/disabling games being blocked
+
+const gamesBlocked = false
+
+// Handle setting a password and logging in
+
+function setPassword(password, hint) {
+    if (!password) {
+        password = prompt('Enter password:');
+        if (!password) {
+            alert('Please enter a password!')
+            setPassword();
+            return;
+        }
+    }
+
+    if (!hint) {
+        hint = prompt('Password hint (optional):')
+    }
+
+    const encoded = btoa(password + "|" + hint);
+    localStorage.setItem('masterPasswd', encoded);
+    localStorage.setItem('passwdEnabled', 'true');
+}
+
+function rmPassword() {
+    localStorage.removeItem('masterPasswd');
+    localStorage.removeItem('passwdEnabled');
+    sessionStorage.removeItem('loggedInPasswd');
+}
+
+function verifyPassword() {
+    const loggedInPasswd = sessionStorage.getItem('loggedInPasswd');
+    if (loggedInPasswd === "false") {
+        const passwdEnabled = localStorage.getItem('passwdEnabled');
+        if (passwdEnabled === "true") {
+            const encoded = localStorage.getItem('masterPasswd');
+            if (encoded) {
+                var [storedPassword, hint] = atob(encoded).split('|');
+                if(hint) {
+                    hint = '\nHint: ' + hint
+                } else {
+                    hint = ''
+                }
+
+                const enteredPassword = prompt('LOGIN\nEnter password here' + hint);
+
+                if (enteredPassword === storedPassword) {
+                    sessionStorage.setItem('loggedInPasswd', 'true');
+                    alert('Successfully logged in!');
+                } else {
+                    verifyPassword();
+                }
+            }
+        }
+    } else if (!loggedInPasswd) {
+        sessionStorage.setItem('loggedInPasswd', 'false');
+    }
+}
+
+verifyPassword();
+
+// Handle activating DOM2 spaceship
+
+let DOM2CtrlPressed = false;
+let DOM2AltPressed = false;
+let sPressed = false;
+let actionTriggered = false;
+
+function handleKeyCombination(e) {
+    if (e.key === 'Control') {
+        DOM2CtrlPressed = true;
+    } else if (e.key === 'Alt' || e.key === 'Option') {
+        DOM2AltPressed = true;
+    } else if (e.key === 's') {
+        sPressed = true;
+    }
+
+    if (DOM2CtrlPressed && DOM2AltPressed && sPressed && actionTriggered === false) {
+        window.Dom2=window.Dom2||{},function(a){function b(a,b){this.x=a,this.y=b}function c(a,b){this.position=a,this.direction=b}function d(){function a(){I.dom2.isAccelerating=!0}function d(){I.dom2.isAccelerating=!1}function e(){I.dom2.isRotatingLeft=!0}function f(){I.dom2.isRotatingLeft=!1}function g(){I.dom2.isRotatingRight=!0}function h(){I.dom2.isRotatingRight=!1}function i(a){I.dom2.isShooting=!0,I.dom2.isAtLeastOneShot=!0}function j(){I.dom2.isShooting=!1}function k(a){var c=(new Date).getTime(),d=(c-w)/1e3;w=c,C=d,d=Math.min(.02,d);var e=x=a.gamma,f=y=a.beta;return e=Math.max(Math.min(Math.round(e*z)/z,90),-90),f=Math.max(Math.min(Math.round(f*z)/z,90),-90),x=e,y=f,Math.abs(e)<=.2||Math.abs(f)<=.2?(I.dom2.isRotatingLeft=!1,void(I.dom2.isRotatingRight=!1)):(A=S*Math.min(1,20*Math.abs(e)/90),B=S*Math.min(1,20*Math.abs(f)/90),e*=Math.PI/180,f*=Math.PI/180,v=new b(e,f).normalize(),u=new b(A*d*v.x,B*d*v.y).add(I.dom2.speed),u.x>V?u.x=V:u.x<-V&&(u.x=-V),u.y>V?u.y=V:u.y<-V&&(u.y=-V),I.dom2.direction=v,void(I.dom2.speed=u))}function l(a){if(t){if(P=document.elementsFromPoint(a.x,a.y),!P)return null;for(var b=0;b<P.length;b++)if(m(P[b]))return P[b]}else{if(N=document.elementFromPoint(a.x,a.y),console.log(N),!N)return null;if(N.nodeType===Node.TEXT_NODE&&(N=N.parentElement),m(N))return N}return null}function m(a){return a!==document.body&&!a.classList.contains("dom2")&&a.children.length<2&&a!==Node.TEXT_NODE}function n(){_=!1,I.parentNode.removeChild(I),q.parentNode.removeChild(q)}function o(a){for(var c,d=(new Date).getTime(),e=0;20>e;e++)c={},c.position=new b(a.x,a.y),c.direction=new b(1,1).rotate(360*Math.random()),c.speed=X*(1-.2*Math.random()),c.color=e%3==0?"#E14832":e%3==1?"#ff0000":"#1E1E1E",c.time=d,da.push(c)}var p=this;console.log("Ignite()");var q=document.createElement("div");q.className="dom2";var r=!!("onorientationchange"in window),s=!r&&!!("ontouchstart"in window||navigator.msMaxTouchPoints),t=!!document.elementsFromPoint;console.log("supportsFetchingSeveralElements:"+t);var u,v,w=(new Date).getTime(),x="-",y="-",z=10,A=0,B=0,C="-",D=document.createElement("div");if(D.id="shipContainer",D.className="dom2",document.body.appendChild(D),s){q.innerHTML='<div class="dom2" style="-webkit-touch-callout: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;font-family:Arial, Helvetica, sans-serif;font-size: 12px;background:rgba(0,0,0,0.6);width:100%;position:fixed;bottom:0;color:#fff;z-index:1010;text-align:center;"><div class="dom2" id="Dom2.controls.up" style="box-sizing:border-box;width:80px;height:80px;;text-align:center;font-size:x-large;border-left:1px solid #fff;border-top:1px solid #fff;border-right:1px solid #fff;padding:20px;display:inline-block;">&uarr;</div><div class="dom2" style="text-align:center;width:100%; overflow: hidden;margin-left:auto;margin-right:auto;"><div class="dom2" id="Dom2.controls.left" style="box-sizing:border-box;width:80px;height:80px;text-align:center;font-size:x-large;border-left:1px solid #fff;border-top:1px solid #fff;border-bottom:1px solid #fff;padding:20px;display:inline-block;">&larr;</div><div class="dom2" id="Dom2.controls.shoot" style="box-sizing:border-box;width:80px;height:80px;text-align:center;font-size:x-large;border:1px solid #fff;padding:20px;display:inline-block;">&otimes;</div><div class="dom2" id="Dom2.controls.right" style="box-sizing:border-box;width:80px;height:80px;text-align:center;font-size:x-large;border-top:1px solid #fff;border-bottom:1px solid #fff;border-right:1px solid #fff;padding:20px;display:inline-block;">&rarr;</div></div><div class="dom2" style="width:100%;text-align:center;clear:left;">Control ship with arrows or WASD. Shoot with SPACE or mouse click. Press ESC to quit.</div></div>',D.appendChild(q);var E=document.getElementById("Dom2.controls.up"),F=document.getElementById("Dom2.controls.left"),G=document.getElementById("Dom2.controls.right"),H=document.getElementById("Dom2.controls.shoot");E.addEventListener("touchstart",a),E.addEventListener("mousedown",a),E.addEventListener("touchend",d),E.addEventListener("mouseup",d),F.addEventListener("touchstart",e),F.addEventListener("mousedown",e),F.addEventListener("touchend",f),F.addEventListener("mouseup",f),G.addEventListener("touchstart",g),G.addEventListener("mousedown",g),G.addEventListener("touchend",h),G.addEventListener("mouseup",h),H.addEventListener("touchstart",i),H.addEventListener("mousedown",i),H.addEventListener("touchend",j),H.addEventListener("mouseup",j)}else r?(q.innerHTML='<div class="dom2" style="font-family:Arial, Helvetica, sans-serif;font-size: 12px;background:rgba(0,0,0,0.6);width:100%;position:fixed;bottom:0;color:#fff;z-index:1010;"><div class="dom2" style="width:100%;text-align:center;">Control ship tilting your device. Shoot by touching the screen.</div></div>',D.appendChild(q),window.addEventListener("deviceorientation",k,!0)):(q.innerHTML='<div class="dom2" style="font-family:Arial, Helvetica, sans-serif;font-size: 12px;background:rgba(0,0,0,0.6);width:100%;position:fixed;bottom:0;color:#fff;z-index:1010;"><div class="dom2" style="width:100%;text-align:center;">Control ship with arrows or WASD. Shoot with SPACE or mouse click. Press ESC to quit.</div></div>',D.appendChild(q));var I=document.createElement("canvas");I.className="dom2",I.addEventListener("mousedown",i,!1),I.addEventListener("mouseup",j,!1),I.width=document.clientWidth||window.innerWidth||document.documentElement.clientWidth,I.height=document.clientHeight||window.innerHeight||document.documentElement.clientHeight,I.style.width=I.width+"px",I.style.height=I.height+"px",I.style.zIndex=1e3,I.style.position="fixed",I.style.top=0,I.style.left=0,I.style.webkitTapHighlightColor="rgba(0,0,0,0)",I.dom2={},I.dom2.direction=new b(0,-1),I.dom2.position=new b(I.width/2-40,I.height/2-4.5),I.dom2.speed=new b(0,0),I.id="Dom2.ship",D.appendChild(I),document.onkeydown=function(a){switch(a.keyCode){case 32:return I.dom2.isShooting=!0,I.dom2.isAtLeastOneShot=!0,!1;case 65:case 37:return I.dom2.isRotatingLeft=!0,!1;case 87:case 38:return I.dom2.isAccelerating=!0,!1;case 39:case 68:return I.dom2.isRotatingRight=!0,!1;case 40:case 83:return I.dom2.isDeaccelerating=!0,!1;case 27:n()}},document.onkeypress=function(a){},document.onkeyup=function(a){switch(a.keyCode){case 32:return I.dom2.isShooting=!1,!1;case 65:case 37:return I.dom2.isRotatingLeft=!1,!1;case 87:case 38:return I.dom2.isAccelerating=!1,!1;case 68:case 39:return I.dom2.isRotatingRight=!1,!1;case 40:case 83:return I.dom2.isDeaccelerating=!1,!1}};var J,K,L,M,N,O,P,Q=(new Date).getTime(),R=400,S=450,T=.95,U=1,V=700,W=750,X=150,Y=10,Z=.6,$=250,_=!0,aa=0,ba=[],ca=0,da=[];return p.run=function(){if(_){var a=(new Date).getTime(),d=(a-Q)/1e3;if(Q=a,I.dom2.isRotatingLeft&&I.dom2.direction.rotate(R*-d),I.dom2.isRotatingRight&&I.dom2.direction.rotate(R*d),I.dom2.isAccelerating?(I.dom2.speed.add(new b(S*d*I.dom2.direction.x,S*d*I.dom2.direction.y)),I.dom2.speed.x>V?I.dom2.speed.x=V:I.dom2.speed.x<-V&&(I.dom2.speed.x=-V),I.dom2.speed.y>V?I.dom2.speed.y=V:I.dom2.speed.y<-V&&(I.dom2.speed.y=-V)):I.dom2.speed.multiply(1-T*d),I.dom2.isDeaccelerating&&I.dom2.speed.multiply(1-U*d),I.dom2.position.add(new b(d*I.dom2.speed.x,d*I.dom2.speed.y)),I.dom2.position.y<Y?window.pageYOffset>0?(L=Math.min(window.pageYOffset,I.height),window.scrollBy(0,-L),I.dom2.position.y+=L,I.dom2.position.y>I.height-Y&&(I.dom2.position.y=I.height-Y)):(I.dom2.position.y=Y,I.dom2.speed.y=-I.dom2.speed.y*Z):I.dom2.position.y>I.height-Y&&(K=document.body.offsetHeight-(window.innerHeight+window.pageYOffset),K>0?(L=Math.min(K,I.height),window.scrollBy(0,L),I.dom2.position.y-=L,I.dom2.position.y<Y&&(I.dom2.position.y=Y)):(I.dom2.position.y=I.height-Y,I.dom2.speed.y=-I.dom2.speed.y*Z)),I.dom2.position.x<Y?(I.dom2.position.x=Y,I.dom2.speed.x=-I.dom2.speed.x*Z):I.dom2.position.x>I.width-Y&&(I.dom2.position.x=I.width-Y,I.dom2.speed.x=-I.dom2.speed.x*Z),(I.dom2.isAtLeastOneShot||I.dom2.isShooting)&&a>aa+$&&(aa=a,I.dom2.isAtLeastOneShot=!1,ba.push(new c(new b(I.dom2.position.x+22*I.dom2.direction.x,I.dom2.position.y+22*I.dom2.direction.y),new b(I.dom2.direction.x,I.dom2.direction.y)))),J=I.getContext("2d"),J.save(),J.clearRect(0,0,I.width,I.height),ba.length>0){for(t||(D.style.zIndex=-1e3,I.style.zIndex=-990,q.style.zIndex=-980),M=ba.length,J.fillStyle="#000",O=l(new b(I.dom2.position.x+22*I.dom2.direction.x,I.dom2.position.y+22*I.dom2.direction.y),new b(I.dom2.direction.x,I.dom2.direction.y));M--;)ba[M].position.add(new b(d*ba[M].direction.x*W,d*ba[M].direction.y*W)),ba[M].position.x<0||ba[M].position.x>I.width||ba[M].position.y<0||ba[M].position.y>I.height?ba.splice(M,1):(N=l(ba[M].position),J.fillRect(ba[M].position.x-2,ba[M].position.y-2,4,4),N&&N!=O&&(o(ba[M].position),N.remove?N.remove():N.parentNode.removeChild(N),ba.splice(M,1)));t||(D.style.zIndex=1e3,I.style.zIndex=1005,q.style.zIndex=1010)}if(da.length>0)for(M=da.length;M--;)a-da[M].time>900?da.splice(M,1):(da[M].position.add(new b(d*da[M].direction.x*da[M].speed,d*da[M].direction.y*da[M].speed)),J.globalAlpha=1-(a-da[M].time)/900,J.fillStyle=da[M].color,J.fillRect(da[M].position.x-2,da[M].position.y-2,4,4));J.globalAlpha=1,J.translate(I.dom2.position.x,I.dom2.position.y),J.rotate(I.dom2.direction.getAngle()),J.globalAlpha=ca,1>ca&&(ca+=.5*d),J.strokeStyle="#000",J.fillStyle="#558AA1",J.lineWidth=2,J.lineCap="square",J.beginPath(),J.moveTo(-10,12),J.lineTo(20,0),J.lineTo(-10,-12),J.closePath(),J.stroke(),J.fill(),J.restore(),window.requestAnimationFrame&&window.requestAnimationFrame(p.run)}},window.requestAnimationFrame?window.requestAnimationFrame(p.run):setInterval(p.run,1e3/60),p.stop=function(){},!1}b.prototype={RADIANS_FACTOR:Math.PI/180,rotate:function(a){var b=a*this.RADIANS_FACTOR,c=this.x,d=this.y;return this.x=c*Math.cos(b)-Math.sin(b)*d,this.y=c*Math.sin(b)+Math.cos(b)*d,this},add:function(a){return this.x+=a.x,this.y+=a.y,this},multiply:function(a){return this.x*=a,this.y*=a,this},getAngle:function(){return Math.atan2(this.y,this.x)},length:function(){var a=Math.sqrt(this.x*this.x+this.y*this.y);return.005>a&&a>-.005?0:a},normalize:function(){var a=this.length();return 0!==a?(this.x/=a,this.y/=a):this.x=this.y=0,this}},a.Ignite=d}(window.Dom2),Dom2.Ignite(),console.log("                                                    "),console.log("8888888b.  .d88888b. 888b     d888   88888888888888 "),console.log('888  "Y88bd88P" "Y88b8888b   d8888     888    888   '),console.log("888    888888     88888888b.d88888     888    888   "),console.log("888    888888     888888Y88888P888     888    888   "),console.log("888    888888     888888 Y888P 888     888    888   "),console.log("888    888888     888888  Y8P  888     888    888   "),console.log('888  .d88PY88b. .d88P888   "   888     888    888   '),console.log('8888888P"  "Y88888P" 888       888   88888888888888 '),console.log("                                                    "),console.log("                  JavaScript                   "),console.log("                                                    ");
+
+        actionTriggered = true;
+    }
+
+    if (e.key === 'Escape') {
+        actionTriggered = false;
+    }
+}
+
+function handleKeyRelease(e) {
+    if (e.key === 'Control') {
+        DOM2CtrlPressed = false;
+    } else if (e.key === 'Alt' || e.key === 'Option') {
+        DOM2AltPressed = false;
+    } else if (e.key === 's') {
+        sPressed = false;
+    }
+}
+
+document.addEventListener('keydown', handleKeyCombination);
+document.addEventListener('keyup', handleKeyRelease);
+
+// Handle hiding navbar
+
+const hideNavbarURLParam = new URLSearchParams(queryString).get('hidenavbar');
+
+document.addEventListener("DOMContentLoaded", function() {
+    if (hideNavbarURLParam) {
+        if (hideNavbarURLParam === "true") {
+            const navbarElement = document.getElementsByClassName("navbar");
+
+            if (navbarElement) {
+                navbarElement[0].remove()
+            }
+            
+            if (inGamesPage == true) {
+                const searchBarElement = document.getElementsByClassName("search-bar");
+                const gameContainerElement = document.getElementById("gameContainer");
+                searchBarElement[0].style.top = "10px";
+                gameContainerElement.style.top = "25px";
+            } else if (inChangelog == true) {
+                const changelogElement = document.getElementById("changelog");
+                changelogElement.style.top = "0px";
+            }
+        }
+    }
+});
+
+// Handle page transitions
+
+window.onload = () => {
+    if (!location.href.includes("/game/")) {
+        const transitionElement1 = document.querySelector('.transition-1');
+        const transitionElement2 = document.querySelector('.transition-2');
+        const pageAnchors = document.getElementsByClassName('hoverable');
+    
+        setTimeout(() => {
+            transitionElement1.classList.remove('active');
+            transitionElement2.classList.remove('active');
+        }, 500);
+    
+        for (let i = 0; i < pageAnchors.length; i++) {
+            const pageAnchor = pageAnchors[i];
+    
+            pageAnchor.addEventListener('click', e => {
+                e.preventDefault();
+                let target = pageAnchor.getAttribute('href');
+    
+                transitionElement1.classList.add('active');
+                transitionElement2.classList.add('active');
+    
+                setTimeout(() => {
+                    window.location.href = target;
+                }, 500);
+            });
+        }
+    }
+}
+
+// Handle cloaking page
+
+let isCloaked = false;
+
+function cloakPage() {
+    const createCloakStylesheetElement = document.createElement("style");
+    createCloakStylesheetElement.innerHTML = `:root {
+        --cloak-dark: #212121;
+    }
+    
+    .cloak-left {
+        position: fixed;
+        top: 0;
+        left: -50%;
+        bottom: 0;
+        width: 50%;
+        z-index: 999999999999;
+        background: var(--cloak-dark);
+        transition: 0.5s ease-out;
+    }
+    
+    .cloak-left.active {
+        left: 0;
+    }
+    
+    .cloak-right {
+        position: fixed;
+        top: 0;
+        right: -50%;
+        bottom: 0;
+        width: 50%;
+        z-index: 999999999999;
+        background: var(--cloak-dark);
+        transition: 0.5s ease-out;
+    }
+    
+    .cloak-right.active {
+        right: 0;
+    }`;
+    createCloakStylesheetElement.id = "cloak-stylesheet";
+    document.head.appendChild(createCloakStylesheetElement);
+
+    const createCloakLeftElement = document.createElement("div");
+    createCloakLeftElement.id = "cloak-left";
+    createCloakLeftElement.className = "cloak-left";
+
+    const createCloakRightElement = document.createElement("div");
+    createCloakRightElement.id = "cloak-right";
+    createCloakRightElement.className = "cloak-right";
+
+    document.body.appendChild(createCloakLeftElement);
+    document.body.appendChild(createCloakRightElement);
+
+    isCloaked = true;
+
+    setTimeout(() => {
+        createCloakLeftElement.classList.add('active');
+        createCloakRightElement.classList.add('active');
+    }, 0);
+}
+
+function uncloakPage() {
+    const cloakStylesheetElement = document.getElementById("cloak-stylesheet");
+    const cloakLeftElement = document.getElementById("cloak-left");
+    const cloakRightElement = document.getElementById("cloak-right");
+
+    cloakLeftElement.classList.remove('active');
+    cloakRightElement.classList.remove('active');
+
+    setTimeout(() => {
+        cloakLeftElement.parentNode.removeChild(cloakLeftElement);
+        cloakRightElement.parentNode.removeChild(cloakRightElement); 
+        cloakStylesheetElement.parentNode.removeChild(cloakStylesheetElement);
+        isCloaked = false;
+    }, 500);
+}
+
+function togglePageCloak() {
+    if (isCloaked) {
+        uncloakPage();
+    } else {
+        cloakPage();
+    }
+}
+
+function handleKeyPress(event) {
+    if (event.key === "]") {
+        togglePageCloak();
+    }
+}
+
+window.addEventListener('keypress', handleKeyPress);
+
+// Handle accepting TOS
+
+
+
+// Handle URL redirecting
+
+let URLCtrlPressed = false;
+let URLShiftPressed = false;
+let URLuPressed = false;
+
+function handleKeyCombinationURL(e) {
+    if (e.key === 'Control') {
+        URLCtrlPressed = true;
+    } else if (e.key === 'Shift') {
+        URLShiftPressed = true;
+    } else if (e.key === 'u' || e.key === 'U') {
+        URLuPressed = true;
+    }
+
+    if (e.key === 'Escape') {
+        URLCtrlPressed = false;
+        URLShiftPressed = false;
+        URLuPressed = false;
+    }
+
+    if (URLCtrlPressed && URLShiftPressed && URLuPressed) {
+        var locURL=prompt("Enter URL:", "");
+        if (locURL) {
+            if (locURL.indexOf("http://")!= 0 && locURL.indexOf("https://")!= 0 && locURL.indexOf("javascript:")!= 0) {
+                location.href=('https://searx.colbster937.dev/search?q='+encodeURIComponent(locURL));
+            } else {
+                window.location.href = locURL;
+            }
+        } else {
+            location.reload();
+        }
+        URLCtrlPressed = false;
+        URLShiftPressed = false;
+        URLuPressed = false;
+    }
+}
+
+function handleKeyReleaseURL(e) {
+    if (e.key === 'Control') {
+        URLCtrlPressed = false;
+    } else if (e.key === 'Shift') {
+        URLShiftPressed = false;
+    } else if (e.key === 'u' || e.key === 'U') {
+        URLuPressed = false;
+    }
+}
+
+document.addEventListener('keydown', handleKeyCombinationURL);
+document.addEventListener('keyup', handleKeyReleaseURL);
+
+// Handle startup scripts
+
+if (localStorage.getItem('startupScript')) {
+    const startupScript = localStorage.getItem('startupScript');
+    eval(startupScript)
+}
+
+// Handle banned users
+
+if (localStorage.getItem('banned') === 'true') {
+    location.href = '/banned.html';
+}
+
+// Insta-Ban mobile users
+
+const isMobile = {
+    Android: function() {
+        return navigator.userAgent.match(/Android/i);
+    },
+    BlackBerry: function() {
+        return navigator.userAgent.match(/BlackBerry/i);
+    },
+    iOS: function() {
+        return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+    },
+    Opera: function() {
+        return navigator.userAgent.match(/Opera Mini/i);
+    },
+    Windows: function() {
+        return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
+    },
+    any: function() {
+        return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+    }
+};
+
+function banMobile() {
+    localStorage.setItem('banned', 'true');
+    localStorage.setItem('banned-reason', 'Trying to access Tortilla from a mobile device.');
+    location.href = '/banned.html';;
+}
+
+if( isMobile.any() ) banMobile();

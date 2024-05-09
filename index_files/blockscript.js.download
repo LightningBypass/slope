@@ -1,0 +1,16 @@
+if (gamesBlocked === "true") {
+    const blockGamesEnabled = localStorage.getItem("blockGamesEnabled");
+    if (blockGamesEnabled === "true" || blockGamesEnabled === null) {
+        var date = new Date();
+        var myDay = date.getDay(); 
+
+        var hours = date.getHours();
+        var minutes = date.getMinutes();
+
+        var myTime = hours * 60 + minutes;
+
+        if (myTime > 505 && myTime < 945 && myDay > 0 && myDay < 6) {
+            window.location.href = "https://tortillagames.org/blocked.html";
+        }
+    }
+}
